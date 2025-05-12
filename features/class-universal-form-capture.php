@@ -10,11 +10,29 @@ class Bewta_Universal_Form_Capture {
         add_action('init', [$this, 'catch_init_forms'], 1);
         add_action('template_redirect', [$this, 'catch_template_redirect_forms'], 1);
 
+        // Frontend AJAX hooks
+        add_action('admin_init', [$this, 'check_for_ajax_form_capture'], 1);
+
         $this->override_wp_die();
     }
 
     private function capture_form_data($context = 'unknown') {
-        if ( is_admin() ) return;
+        // Skip admin requests, but allow frontend AJAX requests
+        if (
+            is_admin() &&
+            !(
+                defined('DOING_AJAX') &&
+                DOING_AJAX &&
+                (
+                    !is_user_logged_in() || 
+                    ( is_user_logged_in() && !current_user_can('edit_posts') )
+                )
+            )
+        ) {
+            return;
+        }
+
+
         if ( $this->already_captured ) return;
         $this->already_captured = true;
 
@@ -42,6 +60,16 @@ class Bewta_Universal_Form_Capture {
 
     public function catch_template_redirect_forms() {
         $this->capture_form_data('template_redirect');
+    }
+
+    public function check_for_ajax_form_capture() {
+        if (
+            defined('DOING_AJAX') &&
+            DOING_AJAX &&
+            $_SERVER['REQUEST_METHOD'] === 'POST'
+        ) {
+            $this->capture_form_data('ajax');
+        }
     }
 
     private function override_wp_die() {
