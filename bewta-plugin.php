@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Bewta Plugin
+Plugin Name: Bewta Universal Form Data Capture
 Plugin URI: https://mediusware.com/
-Description: Used by millions.
-Version: 5.3.7
+Description: Modular plugin to capture all frontend form submissions on your WordPress site.
+Version: 5.4.1
 Requires at least: 5.8
 Requires PHP: 5.6.20
 Author: Mediusware Ltd.
@@ -11,3 +11,14 @@ Author URI: https://mediusware.com/
 License: GPLv2 or later
 Text Domain: bewta-plugin
 */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+define( 'BEWTA_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'BEWTA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+require_once BEWTA_PLUGIN_PATH . 'includes/class-loader.php';
+
+add_action('plugins_loaded', function() {
+    new Bewta_Plugin_Loader();
+});
