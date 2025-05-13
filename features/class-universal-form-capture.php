@@ -6,18 +6,19 @@ class Bewta_Universal_Form_Capture {
     private $already_captured = false;
 
     public function __construct() {
+        // Normal frontend forms
         add_action('wp_loaded', [$this, 'catch_global_forms'], 1);
-        add_action('init', [$this, 'catch_init_forms'], 1);
-        add_action('template_redirect', [$this, 'catch_template_redirect_forms'], 1);
+        add_action('template_redirect', [$this, 'capture_template_redirect'], 1);
 
-        // Frontend AJAX hooks
+        // Frontend AJAX forms
         add_action('admin_init', [$this, 'check_for_ajax_form_capture'], 1);
 
+        // Last-chance emergency capture
         $this->override_wp_die();
     }
 
     private function capture_form_data($context = 'unknown') {
-        // Skip admin requests, but allow frontend AJAX requests
+        // Exclude admin requests, allow frontend AJAX only
         if (
             is_admin() &&
             !(
@@ -32,10 +33,16 @@ class Bewta_Universal_Form_Capture {
             return;
         }
 
+        // Exclude WordPress Heartbeat API requests
+        if ( isset($_POST['action']) && $_POST['action'] === 'heartbeat' ) {
+            return;
+        }
 
+        // Prevent duplicate capture
         if ( $this->already_captured ) return;
         $this->already_captured = true;
 
+        // Capture form data
         if ( $_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) ) {
             $form_data = [];
             foreach ($_POST as $key => $value) {
@@ -45,23 +52,20 @@ class Bewta_Universal_Form_Capture {
                 ];
             }
 
-            // Example action: log to debug log
+            // Example action: log to debug log (replace with DB/API/etc.)
             error_log("[$context] Form captured:\n" . print_r($form_data, true));
         }
     }
 
+    // Hook for normal frontend forms
     public function catch_global_forms() {
         $this->capture_form_data('wp_loaded');
     }
-
-    public function catch_init_forms() {
-        $this->capture_form_data('init');
-    }
-
-    public function catch_template_redirect_forms() {
+    public function capture_template_redirect() {
         $this->capture_form_data('template_redirect');
     }
 
+    // Hook for frontend AJAX forms
     public function check_for_ajax_form_capture() {
         if (
             defined('DOING_AJAX') &&
@@ -72,6 +76,7 @@ class Bewta_Universal_Form_Capture {
         }
     }
 
+    // Last-chance emergency capture
     private function override_wp_die() {
         $original_wp_die = $GLOBALS['wp_die_handler'] ?? null;
 
