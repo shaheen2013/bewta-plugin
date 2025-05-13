@@ -22,6 +22,8 @@ class Bewta_Plugin_Loader {
             new Bewta_Form_Capture_Admin_Settings();
         }
 
-        // Add more init calls here when you add more feature classes
+        if ( class_exists('Bewta_Form_Capture_Admin_Campaign') ) {
+            new Bewta_Form_Capture_Admin_Campaign();
+        }
     }
 }
