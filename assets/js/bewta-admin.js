@@ -24,4 +24,37 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.bewta-remove-setting', function() {
         $(this).closest('.bewta-form-setting').remove();
     });
+
+    $('#bewta_form_capture_mode').on('change', function() {
+        if ($(this).val() === 'api') {
+            $('#bewta_api_shortcode_row').show();
+        } else {
+            $('#bewta_api_shortcode_row').hide();
+            $('#bewta_generated_shortcode').val('');
+        }
+    });
+
+    $('#bewta_generate_shortcode').on('click', function() {
+        console.log('clicked....');
+        
+        $('#bewta_generated_shortcode').val('Generating...');
+        $.ajax({
+            url: bewtaSettings.ajax_url,
+            method: 'POST',
+            data: {
+                action: 'bewta_generate_api_shortcode',
+                nonce: bewtaSettings.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#bewta_generated_shortcode').val(response.data);
+                } else {
+                    $('#bewta_generated_shortcode').val('Error: ' + response.data);
+                }
+            },
+            error: function() {
+                $('#bewta_generated_shortcode').val('Request failed.');
+            }
+        });
+    });
 });
