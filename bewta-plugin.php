@@ -59,6 +59,7 @@ add_shortcode('bewta_api_form', function() {
     if (!$form_data) return '<p>No form data available.</p>';
 
     $output = '<form class="bewta-api-form" method="post">';
+    $output .= '<input type="hidden" name="bewta_api_form_submission" value="1">';
 
     foreach ($form_data['sections'] as $section) {
         $output .= '<fieldset>';

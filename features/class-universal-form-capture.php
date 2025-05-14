@@ -17,8 +17,8 @@ class Bewta_Universal_Form_Capture {
         $this->override_wp_die();
     }
 
-    private function capture_form_data($context = 'unknown') {
-        // Exclude admin requests, allow frontend AJAX only
+    private function capture_form_data($context = 'unknown') 
+    {
         if (
             is_admin() &&
             !(
@@ -33,27 +33,64 @@ class Bewta_Universal_Form_Capture {
             return;
         }
 
-        // Exclude WordPress Heartbeat API requests
-        if ( isset($_POST['action']) && $_POST['action'] === 'heartbeat' ) {
-            return;
-        }
+        if ( isset($_POST['action']) && $_POST['action'] === 'heartbeat' ) return;
+        if ( ! isset($_POST['bewta_api_form_submission']) ) return;
 
-        // Prevent duplicate capture
         if ( $this->already_captured ) return;
         $this->already_captured = true;
 
-        // Capture form data
         if ( $_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) ) {
-            $form_data = [];
+            // ✅ Prepare data
+            $data = [];
             foreach ($_POST as $key => $value) {
-                $form_data[] = [
-                    'name'  => $key,
-                    'value' => $value
-                ];
+                if ($key === 'bewta_api_form_submission') continue; // skip marker
+
+                // ✅ Make 'address' and 'socialProfiles' always arrays
+                if (in_array($key, ['address', 'socialProfiles'])) {
+                    $data[$key] = is_array($value) ? $value : [$value];
+                } else {
+                    $data[$key] = $value;
+                }
             }
 
-            // Example action: log to debug log (replace with DB/API/etc.)
-            error_log("[$context] Form captured:\n" . print_r($form_data, true));
+            // ✅ Send to external API
+            $api_key = get_option('bewta_form_capture_api_key');
+            if ($api_key && !empty($data)) {
+                $query = 'mutation Mutation($data: Mixed) {
+                    addContactWithApiKey(data: $data) {
+                        id
+                    }
+                }';
+
+                $variables = ['data' => $data];
+
+                $response = wp_remote_post('http://10.0.0.37:4005/graphql', [
+                    'headers' => [
+                        'Content-Type'  => 'application/json',
+                        'Authorization' => 'Bearer ' . $api_key,
+                    ],
+                    'body' => json_encode([
+                        'query' => $query,
+                        'variables' => $variables
+                    ]),
+                    'timeout' => 30
+                ]);
+
+                if (!is_wp_error($response)) {
+                    $body = wp_remote_retrieve_body($response);
+                    $result = json_decode($body, true);
+
+                    if (isset($result['data']['addContactWithApiKey'][0]['id'])) {
+                        error_log("[{$context}] API contact created. ID: " . $result['data']['addContactWithApiKey'][0]['id']);
+                    } else {
+                        error_log("[{$context}] API contact creation failed. Response: " . $body);
+                    }
+                } else {
+                    error_log("[{$context}] API request error: " . $response->get_error_message());
+                }
+            } else {
+                error_log("[{$context}] API key missing or no form data.");
+            }
         }
     }
 
