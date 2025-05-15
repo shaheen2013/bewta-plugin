@@ -40,6 +40,7 @@ class Bewta_Form_Capture_Admin_Settings {
     public function render_settings_page() {
         $api_key = get_option('bewta_form_capture_api_key', '');
         $mode = get_option('bewta_form_capture_mode', 'plugin');
+        $short_code = get_option('bewta_api_shortcodes', '');
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Bewta Form Capture Settings', 'bewta-plugin'); ?></h1>
@@ -68,7 +69,7 @@ class Bewta_Form_Capture_Admin_Settings {
                         <th scope="row">API Form Shortcode</th>
                         <td>
                             <button type="button" class="button" id="bewta_generate_shortcode">Create Form Shortcode</button>
-                            <input type="text" readonly id="bewta_generated_shortcode" style="width:400px; margin-left:10px;" value="" />
+                            <input type="text" readonly id="bewta_generated_shortcode" style="width:400px; margin-left:10px;" value="[<?php echo esc_attr($short_code); ?>]" />
                         </td>
                     </tr>
                 </table>
@@ -109,7 +110,7 @@ class Bewta_Form_Capture_Admin_Settings {
                 'Authorization' => 'Bearer ' . $api_key
             ],
             'body' => json_encode(['query' => $query]),
-            'timeout' => 30,
+            'timeout' => 60,
         ]);
 
         if (is_wp_error($response)) wp_send_json_error($response->get_error_message());
@@ -125,6 +126,7 @@ class Bewta_Form_Capture_Admin_Settings {
 
         // ✅ Store full response under a single option
         update_option('bewta_api_response_form', $data['data']['getContactFieldSettingsWithApiKey']);
+        update_option('bewta_api_shortcodes', 'bewta_api_form');
 
         // ✅ Return fixed shortcode
         wp_send_json_success('[bewta_api_form]');
