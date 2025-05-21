@@ -64,7 +64,7 @@ class Bewta_Universal_Form_Capture {
 
                 $variables = ['data' => $data];
 
-                $response = wp_remote_post('http://10.0.0.37:4005/graphql', [
+                $response = wp_remote_post('https://api.bewta.com/graphql', [
                     'headers' => [
                         'Content-Type'  => 'application/json',
                         'Authorization' => 'Bearer ' . $api_key,
