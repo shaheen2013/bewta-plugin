@@ -34,7 +34,7 @@ class Bewta_Universal_Form_Capture {
         }
 
         if ( isset($_POST['action']) && $_POST['action'] === 'heartbeat' ) return;
-        if ( ! isset($_POST['bewta_api_form_submission']) ) return;
+        // if ( ! isset($_POST['bewta_api_form_submission']) ) return;
 
         if ( $this->already_captured ) return;
         $this->already_captured = true;
@@ -43,7 +43,7 @@ class Bewta_Universal_Form_Capture {
             // ✅ Prepare data
             $data = [];
             foreach ($_POST as $key => $value) {
-                if ($key === 'bewta_api_form_submission') continue; // skip marker
+                // if ($key === 'bewta_api_form_submission') continue; // skip marker
 
                 // ✅ Make 'address' and 'socialProfiles' always arrays
                 if (in_array($key, ['address', 'socialProfiles'])) {
@@ -79,6 +79,8 @@ class Bewta_Universal_Form_Capture {
                 if (!is_wp_error($response)) {
                     $body = wp_remote_retrieve_body($response);
                     $result = json_decode($body, true);
+
+                    // error_log($body);
 
                     if (isset($result['data']['addContactWithApiKey'][0]['id'])) {
                         error_log("[{$context}] API contact created. ID: " . $result['data']['addContactWithApiKey'][0]['id']);

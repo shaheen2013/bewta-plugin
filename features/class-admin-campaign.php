@@ -76,22 +76,22 @@ class Bewta_Form_Capture_Admin_Campaign {
                 $forms = function_exists('wpforms') ? wpforms()->form->get() : [];
                 break;
             case 'gravityforms/gravityforms.php':
-                $forms = class_exists('GFAPI') ? GFAPI::get_forms() : [];
+                $forms = class_exists('GFAPI') ? \GFAPI::get_forms() : [];
                 break;
             case 'ninja-forms/ninja-forms.php':
                 $forms = function_exists('Ninja_Forms') ? Ninja_Forms()->form()->get_forms() : [];
                 break;
             case 'formidable/formidable.php':
-                $forms = class_exists('FrmForm') ? FrmForm::get_published_forms() : [];
+                $forms = class_exists('FrmForm') ? \FrmForm::get_published_forms() : [];
                 break;
             case 'contact-form-7/wp-contact-form-7.php':
-                $forms = class_exists('WPCF7_ContactForm') ? WPCF7_ContactForm::find() : [];
+                $forms = class_exists('WPCF7_ContactForm') ? \WPCF7_ContactForm::find() : [];
                 break;
             case 'everest-forms/everest-forms.php':
                 $forms = function_exists('evf_get_forms') ? evf_get_forms() : [];
                 break;
             case 'forminator/forminator.php':
-                $forms = class_exists('Forminator_API') ? Forminator_API::get_forms() : [];
+                $forms = class_exists('Forminator_API') ? \Forminator_API::get_forms() : [];
                 break;
             // Add more plugins as needed
         }

@@ -118,8 +118,6 @@ class Bewta_Form_Capture_Admin_Settings {
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
 
-        error_log($body);
-
         if (!isset($data['data']['getContactFieldSettingsWithApiKey']['sections'])) {
             wp_send_json_error('Invalid API response.');
         }
