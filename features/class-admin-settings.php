@@ -104,7 +104,7 @@ class Bewta_Form_Capture_Admin_Settings {
             }
         }';
 
-        $response = wp_remote_post('https://api.bewta.com/graphql', [
+        $response = wp_remote_post('http://10.0.0.21:4005/graphql', [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $api_key
