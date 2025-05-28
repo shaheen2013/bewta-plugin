@@ -17,127 +17,6 @@ class Bewta_Universal_Form_Capture {
         $this->override_wp_die();
     }
 
-    // private function capture_form_data($context = 'unknown') {
-    //     if (
-    //         is_admin() &&
-    //         !(
-    //             defined('DOING_AJAX') &&
-    //             DOING_AJAX &&
-    //             (
-    //                 !is_user_logged_in() || 
-    //                 ( is_user_logged_in() && !current_user_can('edit_posts') )
-    //             )
-    //         )
-    //     ) {
-    //         return;
-    //     }
-
-    //     if ( isset($_POST['action']) && $_POST['action'] === 'heartbeat' ) return;
-    //     if ( $this->already_captured ) return;
-
-    //     $this->already_captured = true;
-
-    //     if ( $_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) ) {
-
-    //         $data = [];
-
-    //         if (isset($_POST['action']) && $_POST['action'] === 'fluentform_submit' && isset($_POST['data'])) {
-    //             // ✅ Fluent Form detected
-    //             parse_str($_POST['data'], $parsed_data); // decode URL-encoded string
-
-    //             // Extract required fields
-    //             $data['firstName']   = $parsed_data['names']['first_name'] ?? '';
-    //             $data['email']       = $parsed_data['email'] ?? '';
-    //             $data['phoneNumber'] = $parsed_data['phoneNumber'] ?? '';
-
-    //             // Merge other fields
-    //             foreach ($parsed_data as $key => $value) {
-    //                 if ($key === 'names') {
-    //                     foreach ($value as $sub_key => $sub_val) {
-    //                         if (!isset($data[$sub_key])) {
-    //                             $data[$sub_key] = $sub_val;
-    //                         }
-    //                     }
-    //                 } elseif (!isset($data[$key])) {
-    //                     $data[$key] = $value;
-    //                 }
-    //             }
-
-    //             error_log("[{$context}] Parsed Fluent Form data: " . print_r($data, true));
-
-    //         } else {
-    //             // ✅ Fallback: generic form (e.g. Contact Form 7)
-    //             foreach ($_POST as $key => $value) {
-    //                 if (in_array($key, ['address', 'socialProfiles'])) {
-    //                     $data[$key] = is_array($value) ? $value : [$value];
-    //                 } else {
-    //                     $data[$key] = $value;
-    //                 }
-
-    //                 // Try to map to required fields if they are not already set
-    //                 if (!isset($data['firstName']) && preg_match('/(name|full_name|fullname|your-name|your_name|firstName|first_name|firstname|fname|given_name|givenName)/i', $key)) {
-    //                     $data['firstName'] = is_array($value) ? implode(' ', $value) : $value;
-    //                 }
-
-    //                 if (!isset($data['email']) && preg_match('/(email|email_address|emailaddress|emailAddress|your-email|your_email|user_email)/i', $key)) {
-    //                     $data['email'] = is_array($value) ? reset($value) : $value;
-    //                 }
-
-    //                 if (!isset($data['phoneNumber']) && preg_match('/(phone|your-phone|your_phone|phoneNumber|phone_number|phoneNumber|mobile|telephone|tel|contact_number|mobile_number)/i', $key)) {
-    //                     $data['phoneNumber'] = is_array($value) ? reset($value) : $value;
-    //                 }
-    //             }
-
-    //             error_log("[{$context}] Generic form data: " . print_r($data, true));
-    //         }
-
-    //         // ✅ Ensure required fields for API
-    //         if (empty($data['firstName']) || empty($data['email']) || empty($data['phoneNumber'])) {
-    //             error_log("[{$context}] Missing required fields: firstName, email, or phoneNumber.");
-    //             return;
-    //         }
-
-    //         // ✅ Send to external API
-    //         $api_key = get_option('bewta_form_capture_api_key');
-    //         if ($api_key && !empty($data)) {
-    //             $query = 'mutation Mutation($data: Mixed) {
-    //                 addContactWithApiKey(data: $data) {
-    //                     id
-    //                 }
-    //             }';
-
-    //             $variables = ['data' => $data];
-
-    //             $response = wp_remote_post('http://10.0.0.21:4005/graphql', [
-    //                 'headers' => [
-    //                     'Content-Type'  => 'application/json',
-    //                     'Authorization' => 'Bearer ' . $api_key,
-    //                 ],
-    //                 'body' => json_encode([
-    //                     'query' => $query,
-    //                     'variables' => $variables
-    //                 ]),
-    //                 'timeout' => 60
-    //             ]);
-
-    //             if (!is_wp_error($response)) {
-    //                 $body = wp_remote_retrieve_body($response);
-    //                 $result = json_decode($body, true);
-
-    //                 if (isset($result['data']['addContactWithApiKey'][0]['id'])) {
-    //                     error_log("[{$context}] API contact created. ID: " . $result['data']['addContactWithApiKey'][0]['id']);
-    //                 } else {
-    //                     error_log("[{$context}] API contact creation failed. Response: " . $body);
-    //                 }
-    //             } else {
-    //                 error_log("[{$context}] API request error: " . $response->get_error_message());
-    //             }
-    //         } else {
-    //             error_log("[{$context}] API key missing or no form data.");
-    //         }
-    //     }
-    // }
-
     private function capture_form_data($context = 'unknown') {
         if (
             is_admin() &&
@@ -223,20 +102,22 @@ class Bewta_Universal_Form_Capture {
             }
 
             // ✅ Send to external API
-            $api_key = get_option('bewta_form_capture_api_key');
-            if ($api_key && !empty($data)) {
-                $query = 'mutation Mutation($data: Mixed) {
-                    addContactWithApiKey(data: $data) {
+            $apiKey = get_option('bewta_form_capture_api_key');
+            if ($apiKey && !empty($data)) {
+                $query = 'mutation AddContactWithApiKey($apiKey: String, $data: Mixed) {
+                    addContactWithApiKey(apiKey: $apiKey, data: $data) {
                         id
                     }
                 }';
 
-                $variables = ['data' => $data];
+                $variables = [
+                    'apiKey' => $apiKey,
+                    'data'   => $data,
+                ];
 
                 $response = wp_remote_post('http://10.0.0.21:4005/graphql', [
                     'headers' => [
                         'Content-Type'  => 'application/json',
-                        'Authorization' => 'Bearer ' . $api_key,
                     ],
                     'body' => json_encode([
                         'query' => $query,
