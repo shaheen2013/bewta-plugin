@@ -115,7 +115,7 @@ class Bewta_Universal_Form_Capture {
                     'data'   => $data,
                 ];
 
-                $response = wp_remote_post('http://10.0.0.21:4005/graphql', [
+                $response = wp_remote_post('https://api.bewta.com/graphql', [
                     'headers' => [
                         'Content-Type'  => 'application/json',
                     ],
@@ -148,6 +148,7 @@ class Bewta_Universal_Form_Capture {
     public function catch_global_forms() {
         $this->capture_form_data('wp_loaded');
     }
+
     public function capture_template_redirect() {
         $this->capture_form_data('template_redirect');
     }
