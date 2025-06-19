@@ -56,7 +56,7 @@ class Bewta_Universal_Form_Capture {
             // 🔑 Field name patterns
             $first_name_keys = ['name', 'full_name', 'fullname', 'your-name', 'your_name', 'first_name', 'firstname', 'fname', 'given_name', 'givenName'];
             $email_keys      = ['email', 'email_address', 'your-email', 'your_email', 'user_email', 'emailaddress', 'emailAddress'];
-            $phone_keys      = ['phone', 'phone_number', 'phonenumber', 'mobile', 'telephone', 'tel', 'your-phone', 'your_phone', 'contact_number', 'mobile_number'];
+            $phone_keys      = ['phone', 'phone_number', 'phoneNumber', 'number', 'mobile', 'telephone', 'tel', 'your-phone', 'your_phone', 'contact_number', 'mobile_number'];
 
             // 🔍 Loop and map fields
             foreach ($raw_data as $key => $value) {
