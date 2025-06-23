@@ -56,7 +56,7 @@ class Bewta_Form_Capture_Admin_Settings {
                             <input type="text" name="bewta_form_capture_api_key" value="<?php echo esc_attr($api_key); ?>" style="width: 400px;" />
                         </td>
                     </tr>
-                    <tr valign="top">
+                    <!-- <tr valign="top">
                         <th scope="row">Form Capture Mode</th>
                         <td>
                             <select name="bewta_form_capture_mode" id="bewta_form_capture_mode">
@@ -71,7 +71,7 @@ class Bewta_Form_Capture_Admin_Settings {
                             <button type="button" class="button" id="bewta_generate_shortcode">Create Form Shortcode</button>
                             <input type="text" readonly id="bewta_generated_shortcode" style="width:400px; margin-left:10px;" value="[<?php echo esc_attr($short_code); ?>]" />
                         </td>
-                    </tr>
+                    </tr> -->
                 </table>
                 <?php submit_button(); ?>
             </form>
