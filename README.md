@@ -32,7 +32,6 @@ Whenever such a form is submitted, the plugin collects the input data and sends 
 The Bewta Plugin has been successfully tested with:
 
 - **Fluent Forms**
-- **WPForms**
 
 Other form plugins may also be compatible as long as the required fields are included.
 
