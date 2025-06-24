@@ -19,7 +19,7 @@ The **Bewta Plugin** is a lightweight WordPress plugin that enables seamless API
 
 ## Usage Instructions
 
-Once the plugin is activated and the API key is saved, it will automatically work with any form on your website that includes the following three fields:
+Once the plugin is activated and the API key is saved, it will automatically work with any form on your website that includes the following three essential fields:
 
 - **First Name**
 - **Email**
@@ -27,19 +27,57 @@ Once the plugin is activated and the API key is saved, it will automatically wor
 
 Whenever such a form is submitted, the plugin collects the input data and sends it to the main server via the API.
 
+To support flexibility across different form builders and field naming conventions, the plugin intelligently maps the following field names:
+
+### Accepted Field Names
+
+#### First Name:
+- `name`
+- `full_name`
+- `fullname`
+- `your-name`
+- `your_name`
+- `first_name`
+- `firstname`
+- `fname`
+
+#### Email:
+- `email`
+- `email_address`
+- `your-email`
+- `your_email`
+- `user_email`
+- `emailaddress`
+- `emailAddress`
+
+#### Phone Number:
+- `phone`
+- `phone_number`
+- `phoneNumber`
+- `number`
+- `mobile`
+- `telephone`
+- `tel`
+- `your-phone`
+- `your_phone`
+- `contact_number`
+- `mobile_number`
+
+As long as your form uses any of the above field names, the plugin will detect and capture the relevant values automatically.
+
 ## Supported Form Plugins
 
 The Bewta Plugin has been successfully tested with:
 
 - **Fluent Forms**
 
-Other form plugins may also be compatible as long as the required fields are included.
+Other form plugins may also be compatible as long as the required fields are present with supported names.
 
 ## Notes
 
-- Ensure that your form fields are properly labeled or identified to reflect **first name**, **email**, and **phone number**, so the plugin can detect and process them correctly.
-- The plugin does not affect your form layout or frontend display.
-- All data is securely transmitted to the target API endpoint.
+- Ensure that your form includes fields for **First Name**, **Email**, and **Phone Number**, using any of the accepted field name variations listed above.
+- The plugin works in the background and does not affect the visual layout or functionality of your forms.
+- All data is securely transmitted to the designated API endpoint.
 
 ## Support
 
